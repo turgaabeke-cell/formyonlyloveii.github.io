@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Matrix Love Ultra</title>
+
+<style>
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: Arial, sans-serif;
+}
+
+/* 🌌 КАНВАС */
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* ❤️ ПРОЗРАЧНОЕ СЕРДЦЕ С БИЕНИЕМ */
+.heart {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    height: 350px;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    filter: drop-shadow(0 0 30px hotpink);
+    animation: beat 1.5s infinite;
+}
+
+@keyframes beat {
+    0%,100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.heart svg {
+    width: 100%;
+    height: 100%;
+}
+
+.heart path {
+    fill: none;
+    stroke: hotpink;
+    stroke-width: 3;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: draw 3s forwards;
+}
+
+@keyframes draw {
+    to { stroke-dashoffset: 0; }
+}
+
+/* 💬 ТЕКСТ ВНУТРИ СЕРДЦА */
+.text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: hotpink;
+    text-align: center;
+    z-index: 10;
+    width: 280px;
+    font-size: 20px;
+    text-shadow:
+        0 0 5px hotpink,
+        0 0 15px hotpink,
+        0 0 25px hotpink;
+    line-height: 1.4;
+}
+
+/* ✨ ЭФФЕКТ ПЕЧАТАНИЯ */
+.cursor {
+    display: inline-block;
+    width: 2px;
+    background: hotpink;
+    margin-left: 5px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="heart">
+<svg viewBox="0 0 100 100">
+<path d="M50 90 
+         L10 50 
+         A20 20 0 0 1 50 20 
+         A20 20 0 0 1 90 50 
+         Z"/>
+</svg>
+</div>
+
+<div class="text">
+    <span id="typing"></span><span class="cursor"></span>
+</div>
+
+<script>
+// 🌧 МАТРИЦА
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const letters = "0123456789";
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+const drops = Array(columns).fill(1);
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0,0,0,0.07)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.fillStyle = "hotpink";
+    ctx.font = fontSize + "px monospace";
+
+    for(let i=0;i<drops.length;i++){
+        let text = letters[Math.floor(Math.random()*letters.length)];
+        ctx.fillText(text,i*fontSize,drops[i]*fontSize);
+
+        if(drops[i]*fontSize > canvas.height && Math.random() > 0.95){
+            drops[i]=0;
+        }
+        drops[i]++;
+    }
+}
+setInterval(drawMatrix,35);
+
+// 💬 ПЛЕЙСХОЛДЕР ДЛЯ 10 СТРОК ТЕКСТА
+const lines = [
+    "Ты как Майами зимой"
+"Как бриллиант на свету"
+"Ты как вернуться домой"
+"В 45-м году"
+"Ты – как в Нескучном саду"
+"Взорвать нескучный косой"
+"Как обратиться к суду"
+"Что все идите в пизду"
+"Ты как рассветы"
+"Ты как закаты"
+];
+
+let lineIndex = 0;
+let charIndex = 0;
+const typingEl = document.getElementById("typing");
+
+function typeEffect() {
+    if(charIndex < lines[lineIndex].length){
+        typingEl.innerHTML += lines[lineIndex].charAt(charIndex);
+        charIndex++;
+        setTimeout(typeEffect,50);
+    } else {
+        setTimeout(() => {
+            typingEl.innerHTML = "";
+            charIndex = 0;
+            lineIndex = (lineIndex+1)%lines.length;
+            typeEffect();
+        },1500);
+    }
+}
+typeEffect();
+
+// 🌐 адаптация окна
+window.addEventListener("resize",()=>{
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+
+</body>
+</html>
